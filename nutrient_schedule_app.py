@@ -31,16 +31,19 @@ data = None  # Initialize data
 if uploaded_concentration_file is not None:
     data = load_data(uploaded_concentration_file)
 
-if data is not None and st.checkbox('Show raw data'):
+if data is not None and st.checkbox('Show nutrient concentration data'):
     st.subheader('Nutrient concentration')
     st.write(data)
 
 c_fertilizer1 = np.abs(np.random.sample(11))*10
 c_fertilizer2 = np.abs(np.random.sample(11))*3
 c_fertilizer3 = np.abs(np.random.sample(11))*0.1
-    
-df_results = ps.calculate_fertilization_schedule(data_path=DATA_PATH_AVG,
-                                               time_intervall_days=2,
-                                               c_fertilizer1=c_fertilizer1,
-                                               c_fertilizer2=c_fertilizer2,
-                                               c_fertilizer3=c_fertilizer3)
+
+if uploaded_concentration_file is not None: 
+    df_results = ps.calculate_fertilization_schedule_df(df=data,
+                                                time_intervall_days=1,
+                                                c_fertilizer1=c_fertilizer1,
+                                                c_fertilizer2=c_fertilizer2,
+                                                c_fertilizer3=c_fertilizer3)
+    fig_excess = ps.plot_excess_stacked_interactive_streamlit(df_results)
+    st.plotly_chart(fig_excess, use_container_width=True)
