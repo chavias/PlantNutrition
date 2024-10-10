@@ -7,29 +7,23 @@ from scipy.interpolate import interp1d
 import plotly.graph_objects as go
 import streamlit as st
 
-def process_data(data_path):
-    df = pd.read_excel(data_path)
-    df_no_time = df.drop(columns='Time')
-    X = df_no_time.to_numpy()
-    # Sort data along axis=0 and reverse to get descending order
-    data = np.sort(X, axis=0)[::-1]
-    # normalize data to 1
-    maxes = np.max(data, axis=0)
-    data = data / maxes
-    return data, maxes
-
 def process_data_df(df):
     if 'Time' in df.columns:
+        df_time = df['Time']
         df_no_time = df.drop(columns='Time')
     elif 'time' in df.columns:
+        df_time = df['time']
         df_no_time = df.drop(columns='time')
     elif 'days' in df.columns:
+        df_time = df['days']
         df_no_time = df.drop(columns='days')
     elif 'Days' in df.columns:
         df_no_time = df.drop(columns='Days')
+        df_time = df['Days']
     else:
         st.error("Error: None of the columns 'Time', 'time', 'Days' or 'days' were found.")
-        st.stop()
+        # st.stop()
+    # time = df_time.to_numpy()
     X = df_no_time.to_numpy()
     # Sort data along axis=0 and reverse to get descending order
     data = np.sort(X, axis=0)[::-1]
@@ -89,66 +83,6 @@ def optimize(c_fertilizer1, c_fertilizer2, c_fertilizer3, c_target, constraint):
     # Extract the optimized values of a and b
     a_opt, b_opt, c_opt = result.x
     return a_opt, b_opt, c_opt, result.fun  # Return optimized a, b, and the minimized value
-
-
-def calculate_fertilization_schedule(data_path, time_intervall_days, c_fertilizer1, c_fertilizer2, c_fertilizer3):
-    # read and normalize data
-    data, maxes = process_data(data_path=data_path)
-    # normalize fartilizer
-    norm_c_fertilizer1 = c_fertilizer1/maxes
-    norm_c_fertilizer2 = c_fertilizer2/maxes
-    norm_c_fertilizer3 = c_fertilizer3/maxes
-
-    # print(f"{norm_c_fertilizer1}")
-    # interpolate the data
-    x_interp, Y_interp = interpolate_data(data, num_points=4*7, kind='linear')
-    # calculate the uptake of each nutrient of the plant
-    # x_interp, plant_uptake_rate = calculate_nutrient_uptake_rate(x_interp, Y_interp, num_interp_points=500)
-    # calculate 
-    time_intervall_week = time_intervall_days/7
-    num_fertilization_events = int(x_interp[-1] // time_intervall_week)
-    # allocate result dictionary
-    results = dict()
-    # build schedule
-    residual = 0
-    for i in range(num_fertilization_events):
-        # define start and end times
-        start = i*time_intervall_week
-        end = (i+1)*time_intervall_week
-        # calculate target without taking into account residuals
-        c_target_without_residuals = absolute_plant_uptake_during_interval(x_interp=x_interp, Y_interp=Y_interp, start=start ,end=end)
-        # calculate the target considering residual (excess) nutrients in the solution
-        c_target = np.abs(c_target_without_residuals - residual) # prevent target being negative
-        # Define the constraint
-        constraint = {
-            'type': 'ineq',  # 'ineq' means the constraint function must return >= 0
-            'fun': constraint_function,
-            'args': (norm_c_fertilizer1, norm_c_fertilizer2, norm_c_fertilizer3, c_target)
-        }
-        # optimize 
-        a_opt, b_opt, c_opt, minimized_value = optimize(norm_c_fertilizer1, norm_c_fertilizer2, norm_c_fertilizer3, c_target, constraint)
-        params_opt = (a_opt, b_opt, c_opt)
-        # calculate the excess nutrient after time period
-        residual = nutrients(params_opt, norm_c_fertilizer1, norm_c_fertilizer2, norm_c_fertilizer3, c_target)
-        # store the results
-        results[f"{int(start*7)}"] = {'f1' : a_opt,
-                                     'f2' : b_opt,
-                                     'f3' : c_opt,
-                                    #  'excess' : (residual*maxes).round(3),
-                                    #  'excess_normalized' : (residual).round(3),
-                                     'excess_1': residual[0],
-                                     'excess_2': residual[1],
-                                     'excess_3': residual[2],
-                                     'excess_4': residual[3],
-                                     'excess_5': residual[4],
-                                     'excess_6': residual[5],
-                                     'excess_7': residual[6],
-                                     'excess_8': residual[7],
-                                     'excess_9': residual[8],
-                                     'excess_10': residual[9],
-                                     'excess_11': residual[10],
-                                     'objective_function': minimized_value}
-    return pd.DataFrame(results).T
 
 
 def calculate_fertilization_schedule_df(df, time_intervall_days, c_fertilizer1, c_fertilizer2, c_fertilizer3):
