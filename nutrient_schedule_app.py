@@ -11,7 +11,6 @@ st.markdown('## Nutrient Concentration')
 def load_data(uploaded_file):
     # Determine the file type based on the extension
     file_extension = uploaded_file.name.split('.')[-1]  # Get the file extension
-    
     match file_extension:
         case "xlsx":
             df = pd.read_excel(uploaded_file)  # Load Excel file
