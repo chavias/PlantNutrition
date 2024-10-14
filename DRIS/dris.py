@@ -84,7 +84,7 @@ def calculate_index_value(index_element, df_diagnosed, df_f):
             result += f_dict[f'f({elements[index_element]}/{element})']
         elif index_element > i:
             result -= f_dict[f'f({element}/{elements[index_element]})']
-    return result
+    return result/len(elements)
 
 
 def calculate_all_index_values(df_diagnosed, df_f):
@@ -93,7 +93,6 @@ def calculate_all_index_values(df_diagnosed, df_f):
     for i in range(len(elements)):
         results_dict[f'I_{elements[i]}'] = [calculate_index_value(i, df_diagnosed, df_f)]
     return pd.DataFrame(results_dict)
-
 
 
 @dataclass
