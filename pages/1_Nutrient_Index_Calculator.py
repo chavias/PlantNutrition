@@ -7,10 +7,10 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="CND Index Calculator", page_icon="📈")
 
-st.markdown("# Nutrient Index Calculator")
+st.markdown("# 📈 Nutrient Index Calculator")
 st.sidebar.header("Nutrient Index Calculator")
 st.write(
-    """This App calculates the DRIS and CND index given a diagnosed and optimal concentrations"""
+    """Calculate the DRIS and CND index given a diagnosed and optimal concentrations of nutrients."""
 )
 
 # st.title('CND Indices Calculator')
@@ -101,10 +101,10 @@ if df_diagnosed is not None and df_optimum is not None:
     fig_cnd = create_bar_plot(cnd_result, y_title='CND Index')
     st.plotly_chart(fig_cnd, use_container_width=True)
 
-    st.subheader('Difference DRIS and CND Index')
+    st.subheader('Difference between DRIS and CND Index')
 
     I_values_diff = pd.DataFrame(dris_results.DRIS_indices.values - cnd_result.values,
                                  columns=[f'Diff_{col}' for col in cnd_result.columns])
     st.write(I_values_diff)
-    fig_diff = create_bar_plot(I_values_diff, y_title='Difference: DRIS - CND')
+    fig_diff = create_bar_plot(I_values_diff, y_title='DRIS - CND')
     st.plotly_chart(fig_diff, use_container_width=True)

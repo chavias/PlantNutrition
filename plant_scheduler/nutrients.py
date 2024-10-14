@@ -23,7 +23,7 @@ def process_data_df(df):
     else:
         st.error("Error: None of the columns 'Time', 'time', 'Days' or 'days' were found.")
         # st.stop()
-    # time = df_time.to_numpy()
+    #time = df_time.to_numpy()
     X = df_no_time.to_numpy()
     # Sort data along axis=0 and reverse to get descending order
     data = np.sort(X, axis=0)[::-1]
