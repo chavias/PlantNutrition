@@ -14,7 +14,6 @@ st.write(
 
 
 # st.markdown('## Nutrient Concentration')
-
 @st.cache_data
 def load_data(uploaded_file):
     # Determine the file type based on the extension
@@ -40,12 +39,17 @@ data = None  # Initialize data
 if uploaded_concentration_file is not None:
     data = load_data(uploaded_concentration_file)
 
-if data is not None and st.checkbox('Show nutrient concentration data'):
-    st.subheader('Nutrient concentration')
-    st.write(data)
-    raw_curves = ps.plot_curves_interactive(data)
-    st.plotly_chart(raw_curves)
-
+if data is not None:
+    if st.checkbox('Show nutrient concentration data'):
+        st.subheader('Nutrient concentration')
+        st.write(data)
+        raw_curves = ps.plot_curves_interactive(data)
+        st.plotly_chart(raw_curves)
+    if st.checkbox('Show nutrient concentration interpolated'):
+        interpol = ps.calc_interpolate_data(data)
+        st.write(interpol)
+        interp_curve = ps.plot_curves_interactive(interpol)
+        st.plotly_chart(interp_curve)
 
 uploaded_fertilizer_file = st.file_uploader("Choose file of nutrient concentration of fertilizer ...", type=["xlsx", "csv", "tsv"])
 fertilizer = None  # Initialize data
@@ -59,6 +63,13 @@ if fertilizer is not None and st.checkbox('Show fertilizer concentration data'):
 
 
 if uploaded_concentration_file is not None and uploaded_fertilizer_file is not None:
+    no = ps.NutrientOptimization(data_path=uploaded_concentration_file,
+                                 fertilizer_path=uploaded_fertilizer_file)
+    
+    # if st.checkbox('Show interpolated data'):
+    #     interp_curves = ps.plot_curves_interactive(no.df_data_normalized_interp)
+    #     st.plotly_chart(interp_curves)
+    
     st.markdown("## Create Nutrient Schedule")
     time_intervall_days = st.selectbox(
     "Time intervall for fertilizing?",
@@ -66,13 +77,12 @@ if uploaded_concentration_file is not None and uploaded_fertilizer_file is not N
     )
     # st.write(f"You selected: {time_intervall_days} days")
 
-    results, maxes = ps.calculate_nutrient_schedule(
-                            path_data=uploaded_concentration_file,
-                            path_fertilizer=uploaded_fertilizer_file,
-                            time_intervall_days=time_intervall_days)
+    no.time_intervall = time_intervall_days
+
+    results = no.calculate_nutrient_schedule()
     
-    df_fertilizer = ps.create_fertilizer_df(results, time_intervall_days)
-    df_left_over = ps.create_left_over_df(results, maxes)
+    df_fertilizer = no.create_fertilizer_df(results)
+    df_left_over = no.create_left_over_df(results)
 
     # nutrient excess
     fig_left_over = ps.plot_stacked_interactive(df_left_over,
