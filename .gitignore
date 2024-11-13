@@ -1,4 +1,5 @@
 # ignore data directory 
+/Literature/
 /data/
 /.venv/
 *.~
