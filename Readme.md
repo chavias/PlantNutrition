@@ -1,5 +1,7 @@
 # Plant Nutrition Application  
 
+![Plant Nutrition](/images/App.png)
+
 The **Plant Nutrition Application** is a user-friendly tool for analyzing plant nutrition data and create optimal nutrition schedules.
 
 ## Key Features  
