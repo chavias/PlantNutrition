@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-# import matplotlib.pyplot as plt
-# import seaborn as sns
 from scipy.optimize import minimize
 from scipy.interpolate import interp1d
 from scipy.interpolate import PchipInterpolator#, Akima1DInterpolator
@@ -147,7 +145,7 @@ class NutrientOptimization:
             start = i*self._time_intervall_days
             end = (i+1)*self._time_intervall_days
             uptake = self.absolute_plant_uptake_during_interval(start, end)
-            target_concentration = np.abs(uptake.to_numpy() - left_over) # substract left over nutrients
+            target_concentration = np.abs(uptake.to_numpy() - left_over)
             # optimize fertilizer amounts
             result = self.optimize(self.df_fertilizer_normalized,
                             target_concentration,
@@ -159,17 +157,12 @@ class NutrientOptimization:
             
         return results
 
-    # optimization_results = calculate_nutrient_schedule(
-    #                             path_data='../data/input/nutrients_avg.xlsx',
-    #                             path_fertilizer='../data/input/fertilizer.xlsx',
-    #                             time_intervall_days=7)
-
 
     def create_left_over_df(self, optimization_results):
         data = {}
         for k, result in optimization_results.items():
             data[k] = result.left_over*self.maxes
-        df = pd.DataFrame(data).T  # Transpose to have keys as row indexes
+        df = pd.DataFrame(data).T 
         return df
 
 
@@ -177,7 +170,7 @@ class NutrientOptimization:
         data = {}
         for k, result in optimization_results.items():
             data[str(int(k)-self._time_intervall_days)] = result.x
-        df = pd.DataFrame(data).T  # Transpose to have keys as row indexes
+        df = pd.DataFrame(data).T
         return df
 
 
@@ -198,15 +191,15 @@ def plot_stacked_interactive(df, fig_title, y_title, legend_title):
     # Add each element as a trace
     for col in element_columns:
         element_values = df[col].values
-        rounded_values = np.round(element_values, 3)  # Round to 3 decimal places
+        rounded_values = np.round(element_values, 3)
 
         # Add a bar trace for each element
         fig.add_trace(go.Bar(
             x=index_labels,
             y=element_values,
             name=col,
-            text=[f'{val:.3f}' for val in rounded_values],  # Format values to 3 decimal places
-            hoverinfo='text+name',  # Show value and label name on hover
+            text=[f'{val:.3f}' for val in rounded_values],  
+            hoverinfo='text+name',
             offsetgroup=0,
             base=bottom
         ))
@@ -219,7 +212,7 @@ def plot_stacked_interactive(df, fig_title, y_title, legend_title):
         title=fig_title,
         xaxis=dict(
             title='Day',
-            type='category',                  # Use categorical axis for clear labeling
+            type='category',                  
         ),
         yaxis=dict(title=y_title),
         barmode='stack',
