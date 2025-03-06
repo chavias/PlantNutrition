@@ -15,5 +15,6 @@ st.markdown(
 
    ### References
     - [DRIS Index](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/diagnosis-and-recommendation-integrated-system)
+    - [CND Index](https://journals.ashs.org/view/journals/jashs/117/2/article-p239.pdf)
 """
 )
