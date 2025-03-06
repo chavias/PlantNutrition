@@ -12,12 +12,11 @@ The **Plant Nutrition Application** is a user-friendly tool for analyzing plant 
 
 This application simplifies plant nutrition management, making it easier to ensure optimal plant health! 🌱  
 
-
 ## Getting Started  
 
 Follow these steps to set up and run the application:  
 
-### 1️⃣ Install Dependencies  
+1️⃣ Install Dependencies  
 
 Navigate to the project directory and install the required dependencies using:  
 
